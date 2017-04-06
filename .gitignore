@@ -3,3 +3,9 @@
 ################################################################################
 
 /Chat/Example1/bin
+/Chat/Example1/obj/Debug
+/Chat/Example2/bin
+/Chat/Example3/obj/Debug
+/Chat/Example3/bin
+/Chat/Example2/obj/Debug
+/Chat/.vs
