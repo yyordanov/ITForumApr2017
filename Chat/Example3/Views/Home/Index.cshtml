@@ -1,0 +1,141 @@
+﻿
+@{
+    ViewBag.Title = "Киро + Димо = ВНЛ :)";
+}
+
+<h2>Киро + Димо = ВНЛ :)</h2>
+
+<div id="history" class="container">
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <span class="pull-right">
+                <input type="button" id="refresh" value="Refresh" />
+            </span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <textarea id="message"></textarea>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <span class="pull-right">
+                <input type="button" id="send" value="Send" />
+            </span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div id="error"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    @{ var baseAddress = Request.Url.Scheme + Uri.SchemeDelimiter + Request.Url.Host + ":" + Request.Url.Port; }
+    var baseAddress = "@baseAddress";
+
+    // Initialization
+    $(function () {
+        refreshHistory();
+
+        $("#refresh").on("click", function () {
+            refreshHistory();
+        });
+
+        $("#send").on("click", function () {
+            send();
+        });
+
+        $(document).on("click", ".del", function () {
+            deleteItem($(this).data("id"));
+        });
+    });
+
+    // AJAX
+    function refreshHistory() {
+        $("#error").text("");
+        $.ajax({
+            url: baseAddress + "/api/Chat",
+            dataType: "json",
+            method: "GET",
+            success: function (data, status, xhr) {
+                $("#history").empty();
+                for (var i = 0; i < data.length; i++) {
+                    var item = data[i];
+                    addHistoryItem(item);
+                }
+                $("#history").animate({ scrollTop: $('#history').prop("scrollHeight") }, 1000);
+            },
+            error: function (xhr, status, error) {
+                $("#error").text(error);
+            }
+        });
+    }
+    function send() {
+        $.ajax({
+            url: baseAddress + "/api/Chat",
+            contentType: "application/json",
+            dataType: "json",
+            method: "POST",
+            data: JSON.stringify({
+                Message: $("#message").val()
+            }),
+            success: function (data, status, xhr) {
+                $("#message").val("");
+                refreshHistory();
+            },
+            error: function (xhr, status, error) {
+                $("#error").text(error + ": " + xhr.responseJSON.ModelState["value.Message"][0]);
+            }
+        });
+    }
+    function deleteItem(id) {
+        $.ajax({
+            url: baseAddress + "/api/Chat/" + id,
+            method: "DELETE",
+            success: function (data, status, xhr) {
+                refreshHistory();
+            },
+            error: function (xhr, status, error) {
+                $("#error").text(error);
+            }
+        });
+    }
+
+
+
+    // Append history item
+    function addHistoryItem(item) {
+        var date = new Date(item.Timestamp);
+        var dateText = date.toLocaleDateString() + " " + date.toLocaleTimeString();
+        $("#history").append(
+            '<div class="row histHeader">' +
+                '<div class="col-sm-6">' +
+                    item.UserName +
+                '</div>' +
+                '<div class="col-sm-4">' +
+                    '<span class="pull-right">' +
+                        dateText +
+                    '</span>' +
+                '</div>' +
+                '<div class="col-sm-1">' +
+                    '<span class="pull-right">[' +
+                        item.Id +
+                    ']</span>' +
+                '</div>' +
+                '<div class="col-sm-1">' +
+                    '<span class="pull-right del" data-id=' + item.Id + '>delete</span>' +
+                '</div>' +
+            '</div>' +
+            '<div>' +
+                '<div class="col-sm-12">' +
+                    item.Message +
+                '</div>' +
+            '</div>');
+    }
+
+</script>
