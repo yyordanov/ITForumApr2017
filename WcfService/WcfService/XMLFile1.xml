@@ -1,0 +1,15 @@
+﻿<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+  <s:Header>
+    <Action s:mustUnderstand="1" xmlns="http://schemas.microsoft.com/ws/2005/05/addressing/none">http://tempuri.org/IChatService/Send</Action>
+  </s:Header>
+  <s:Body>
+    <Send xmlns="http://tempuri.org/">
+      <message xmlns:d4p1="http://schemas.datacontract.org/2004/07/WcfService" xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+        <d4p1:Id>23</d4p1:Id>
+        <d4p1:Message>здравей</d4p1:Message>
+        <d4p1:Timestamp>2017-04-06T13:00:00</d4p1:Timestamp>
+        <d4p1:UserName>kiro</d4p1:UserName>
+      </message>
+    </Send>
+  </s:Body>
+</s:Envelope>
